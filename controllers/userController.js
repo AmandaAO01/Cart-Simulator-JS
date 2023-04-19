@@ -34,12 +34,20 @@ export const getUsers = async (req, res) => {
 
 export const searchUser = async (req, res) => {
     try {
-        const user = await User.findOne(req.params.id)
+        const user = await User.findOne({_id: req.params.id}).populate({
+            path: 'cartId',
+            populate: {
+                path: 'items.itemId',
+                model: 'Product'
+            }
+        })
+        console.log(user)
         if (!user) {
             return res.status(404).json({message:'Usuario no existe'})
         }
         return res.status(200).send(user)
     } catch (error) {
+        console.log(error)
         return res.status(400).json({message:'No se pudo encontrar'})
     }
 }
